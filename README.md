@@ -19,7 +19,7 @@
 - 播放页支持
 - 本地保存
 - 导入、导出json
-<p align="center">
+<p>
   <img src="docs/preview-popup.jpg" width=200 alt="设置弹窗" />
 </p>
 
