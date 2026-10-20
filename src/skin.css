@@ -1,0 +1,323 @@
+/* =====================================================================
+ * B站自定义皮肤 · skin.css
+ * ---------------------------------------------------------------------
+ * 设计要点：
+ *  1. 背景层是 <html> 的第一个子元素 .bili-skin-bg（由 content.js 注入），
+ *     position:fixed + z-index:-1，位于页面所有内容之下，不会被 SPA 重渲染移除。
+ *  2. <html> 使用 isolation:isolate 建立独立层叠上下文，使负 z-index 元素
+ *     位于页面内容之下、画布之上；body 强制透明，露出背景层。
+ *  3. 所有样式只在 html[data-bskin="on"] 时生效，关闭皮肤时对 B 站零影响。
+ *  4. 站点选择器集中在本文件下半部分，B 站改版时通常只需要改这里。
+ * ===================================================================== */
+
+/* ---------- 可调变量（content.js 会以行内样式覆盖） ---------- */
+html[data-bskin] {
+  --bs-bg-image: none;
+  --bs-bg-size: cover;
+  --bs-bg-position: center;
+  --bs-blur: 0px;
+  --bs-brightness: 100%;
+  --bs-saturate: 100%;
+  --bs-dim: 25%;
+  --bs-scale: 1.04;
+
+  --bs-glass-alpha: 0.55;
+  --bs-glass-blur: 14px;
+  --bs-header-dim: 30%;
+
+  /* 自绘的浅色/深色表面色 */
+  --bs-surface: rgba(255, 255, 255, 0.55);
+  --bs-surface-strong: rgba(255, 255, 255, 0.9);
+  --bs-border: rgba(0, 0, 0, 0.08);
+  --bs-text: #18191c;
+  --bs-text-2: #61666d;
+}
+
+html[data-bskin][data-bskin-theme="dark"] {
+  --bs-surface: rgba(24, 25, 28, 0.6);
+  --bs-surface-strong: rgba(24, 25, 28, 0.92);
+  --bs-border: rgba(255, 255, 255, 0.12);
+  --bs-text: #e3e5e7;
+  --bs-text-2: #aeb3b9;
+}
+
+/* =====================================================================
+ * 一、背景层
+ * ===================================================================== */
+html[data-bskin] {
+  background-color: var(--bs-fallback-color, #0b0c10) !important;
+  background-image: none !important;
+  isolation: isolate;
+  min-height: 100%;
+}
+
+/* 防止浏览器/站点给 body 设置背景色盖住背景层 */
+html[data-bskin] > body {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/* B 站的 #app 自带白色底，会整体盖住背景层，必须一起透明化 */
+html[data-bskin] #app,
+html[data-bskin] .bili-feed4,
+html[data-bskin] .bili-feed4-layout,
+html[data-bskin] .feed2 {
+  background-color: transparent !important;
+}
+
+/* 万一有人给 body 加了 transform/filter，背景层仍固定于视口 */
+html[data-bskin] .bili-skin-bg {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+  background: var(--bs-fallback-color, #0b0c10);
+}
+
+.bili-skin-bg__img {
+  position: absolute;
+  inset: -2px;
+  background-image: var(--bs-bg-image);
+  background-position: var(--bs-bg-position);
+  background-size: var(--bs-bg-size);
+  background-repeat: no-repeat;
+  transform: scale(var(--bs-scale));
+  transform-origin: center;
+  filter: blur(var(--bs-blur)) brightness(var(--bs-brightness)) saturate(var(--bs-saturate));
+  will-change: filter;
+}
+
+/* 压暗/压亮遮罩，让前景文字更容易看清 */
+.bili-skin-bg__tint {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, var(--bs-dim));
+}
+
+html[data-bskin][data-bskin-theme="light"] .bili-skin-bg__tint {
+  background: rgba(255, 255, 255, calc(var(--bs-dim) * 0.85));
+}
+
+/* =====================================================================
+ * 二、顶栏 / 频道栏
+ * ===================================================================== */
+
+/* 2.0 隐藏 B 站横幅里的插画资源（静态图 + 动态图层），让背景层露出来 */
+html[data-bskin] .bili-header__banner .banner-img,
+html[data-bskin] .bili-header__banner .animated-banner,
+html[data-bskin] .bili-header__banner .header-banner__inner,
+html[data-bskin] .bili-header__banner .taper-line {
+  display: none !important;
+}
+
+/* 2.1 让顶栏区域透出背景（毛玻璃 / 沉浸模式） */
+html[data-bskin][data-bskin-page="glass"] .bili-header,
+html[data-bskin][data-bskin-page="immersive"] .bili-header,
+html[data-bskin][data-bskin-page="glass"] .bili-header--large,
+html[data-bskin][data-bskin-page="immersive"] .bili-header--large,
+html[data-bskin][data-bskin-page="glass"] .bili-header__banner,
+html[data-bskin][data-bskin-page="immersive"] .bili-header__banner {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/* 让频道图标区与内容区之间自然过渡 */
+html[data-bskin][data-bskin-page="glass"] .bili-header__channel,
+html[data-bskin][data-bskin-page="immersive"] .bili-header__channel {
+  background: linear-gradient(
+    to bottom,
+    rgba(8, 9, 12, calc(var(--bs-header-dim) + 10%)) 0%,
+    rgba(8, 9, 12, calc(var(--bs-header-dim) * 0.4)) 60%,
+    rgba(8, 9, 12, 0) 100%
+  );
+}
+
+/* 2.2 顶栏：半透明压暗 + 底边渐隐，保证白色导航文字清晰 */
+html[data-bskin] .bili-header__bar {
+  background: linear-gradient(
+    to bottom,
+    rgba(8, 9, 12, calc(var(--bs-header-dim) + 30%)) 0%,
+    rgba(8, 9, 12, calc(var(--bs-header-dim) + 8%)) 55%,
+    rgba(8, 9, 12, 0) 100%
+  ) !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+  backdrop-filter: blur(var(--bs-glass-blur));
+  -webkit-backdrop-filter: blur(var(--bs-glass-blur));
+}
+
+html[data-bskin] .bili-header--slide-down .bili-header__bar,
+html[data-bskin] .bili-header--fixed .bili-header__bar {
+  background: rgba(12, 13, 16, calc(var(--bs-header-dim) + 45%)) !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* 2.3 搜索框 / 顶部按钮在自定义背景上更通透 */
+html[data-bskin] .nav-search-content {
+  background: rgba(255, 255, 255, 0.16) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+html[data-bskin] .nav-search-input {
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+html[data-bskin] .nav-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+html[data-bskin] .nav-search-btn {
+  background: transparent !important;
+}
+
+html[data-bskin] .nav-search-btn svg {
+  fill: rgba(255, 255, 255, 0.9) !important;
+}
+
+html[data-bskin] .right-entry__outside,
+html[data-bskin] .right-entry__item {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* =====================================================================
+ * 三、内容区：毛玻璃 / 沉浸
+ * ===================================================================== */
+
+/* 3.1 glass：给首页推荐流铺一层淡淡的玻璃底，文字不再"飘"在图上 */
+html[data-bskin][data-bskin-page="glass"]:not([data-bskin-kind="watch"]) .bili-feed4-layout {
+  border-radius: 14px;
+  background: var(--bs-surface);
+  backdrop-filter: blur(var(--bs-glass-blur)) saturate(115%);
+  -webkit-backdrop-filter: blur(var(--bs-glass-blur)) saturate(115%);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--bs-border);
+}
+
+html[data-bskin][data-bskin-page="glass"]:not([data-bskin-kind="watch"]) .bili-feed4-layout > .feed2 {
+  padding: 10px 16px;
+}
+
+/* 深色模式下把推荐流的文本色提亮（只作用于卡片信息区） */
+html[data-bskin][data-bskin-page="glass"][data-bskin-theme="dark"] .bili-video-card__info--tit,
+html[data-bskin][data-bskin-page="glass"][data-bskin-theme="dark"] .bili-video-card__info--tit a,
+html[data-bskin][data-bskin-page="glass"][data-bskin-theme="dark"] .bili-video-card__info--author,
+html[data-bskin][data-bskin-page="glass"][data-bskin-theme="dark"] .bili-video-card__info--date,
+html[data-bskin][data-bskin-page="glass"][data-bskin-theme="dark"] .bili-video-card__stats--text {
+  color: var(--bs-text) !important;
+}
+
+html[data-bskin][data-bskin-page="glass"][data-bskin-theme="dark"] .bili-video-card__stats--icon {
+  fill: var(--bs-text-2) !important;
+}
+
+/* 3.2 immersive：隐藏横贯页面的首屏轮播与顶部频道图标，专注内容 */
+html[data-bskin][data-bskin-page="immersive"] .bili-header .bili-header__banner,
+html[data-bskin][data-bskin-page="immersive"] .bili-header__channel,
+html[data-bskin][data-bskin-page="immersive"] .bili-header__banner .header-banner__inner {
+  display: none !important;
+}
+
+html[data-bskin][data-bskin-page="immersive"] .bili-header {
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+html[data-bskin][data-bskin-page="immersive"] .bili-header__bar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+html[data-bskin][data-bskin-page="immersive"] .bili-feed4-layout {
+  padding-top: 76px;
+}
+
+/* 3.3 播放页：页面本身透明，播放器与信息卡片各自成为玻璃面板 */
+html[data-bskin][data-bskin-kind="watch"] .bili-feed4-layout,
+html[data-bskin][data-bskin-kind="watch"] .feed2,
+html[data-bskin][data-bskin-kind="watch"] .container {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* 纯背景模式下，播放页/首页都保持透明，不铺玻璃 */
+html[data-bskin][data-bskin-page="plain"] .bili-feed4-layout {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html[data-bskin][data-bskin-kind="watch"] .main-container,
+html[data-bskin][data-bskin-kind="watch"] #bilibili-player,
+html[data-bskin][data-bskin-kind="watch"] .bpx-player-container {
+  border-radius: 10px;
+}
+
+html[data-bskin][data-bskin-page="glass"] .video-info-container,
+html[data-bskin][data-bskin-page="glass"] .video-container-v1,
+html[data-bskin][data-bskin-page="glass"] .video-toolbar-container,
+html[data-bskin][data-bskin-page="glass"] .up-info-container,
+html[data-bskin][data-bskin-page="glass"] .comment-container,
+html[data-bskin][data-bskin-page="glass"] .reply-list,
+html[data-bskin][data-bskin-page="glass"] .video-page-card-small,
+html[data-bskin][data-bskin-page="glass"] .recommend-list-v1,
+html[data-bskin][data-bskin-page="glass"] .playlist-container {
+  background: var(--bs-surface) !important;
+  backdrop-filter: blur(var(--bs-glass-blur));
+  -webkit-backdrop-filter: blur(var(--bs-glass-blur));
+  border-radius: 10px;
+  border: 1px solid var(--bs-border);
+}
+
+/* 播放页的页头背景条 */
+html[data-bskin] .video-page__header,
+html[data-bskin] .bili-header__banner {
+  background-color: transparent !important;
+}
+
+/* =====================================================================
+ * 四、滚动条 & 细节
+ * ===================================================================== */
+html[data-bskin] ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+html[data-bskin] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html[data-bskin] ::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.45);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+html[data-bskin] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(128, 128, 128, 0.7);
+  background-clip: content-box;
+}
+
+/* 减少动画偏好 */
+@media (prefers-reduced-motion: reduce) {
+  html[data-bskin] * {
+    scroll-behavior: auto !important;
+  }
+}

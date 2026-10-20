@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>B站自定义皮肤</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- 顶部 -->
+    <header class="topbar">
+      <img class="logo" src="icons/icon48.png" alt="" width="34" height="34" />
+      <div class="titles">
+        <h1>B站自定义皮肤</h1>
+        <p id="status" class="status">正在读取设置…</p>
+      </div>
+      <label class="switch" title="开启 / 关闭（快捷键 Alt+B）">
+        <input type="checkbox" id="enabled" checked />
+        <span class="switch__track"><span class="switch__thumb"></span></span>
+      </label>
+    </header>
+
+    <!-- 背景图片来源 -->
+    <section class="card">
+      <div class="card__head">
+        <h2>背景图片</h2>
+        <span id="source-badge" class="badge">未设置</span>
+      </div>
+
+      <div class="sources" role="radiogroup" aria-label="背景来源">
+        <button class="src" data-source="file" role="radio" aria-checked="false">
+          <span class="src__icon">🖼️</span>
+          <span class="src__label">本地上传</span>
+        </button>
+        <button class="src" data-source="url" role="radio" aria-checked="false">
+          <span class="src__icon">🔗</span>
+          <span class="src__label">图片链接</span>
+        </button>
+        <button class="src" data-source="preset" role="radio" aria-checked="false">
+          <span class="src__icon">🎨</span>
+          <span class="src__label">渐变预设</span>
+        </button>
+        <button class="src" data-source="banner" role="radio" aria-checked="false">
+          <span class="src__icon">🎬</span>
+          <span class="src__label">首页横幅</span>
+        </button>
+      </div>
+
+      <!-- 本地上传 -->
+      <div class="panel" id="panel-file">
+        <label class="drop" id="drop" for="file-input">
+          <input type="file" id="file-input" accept="image/png,image/jpeg,image/webp,image/gif,image/avif" hidden />
+          <span class="drop__main">点击选择图片，或拖拽到这里</span>
+          <span class="drop__hint">支持 JPG / PNG / WebP / GIF，建议 1920×1080 以上</span>
+        </label>
+        <div class="file-meta" id="file-meta" hidden>
+          <img id="file-preview" class="thumb" alt="背景预览" />
+          <div class="file-meta__info">
+            <strong id="file-name">background.jpg</strong>
+            <span id="file-size" class="muted">0 KB</span>
+          </div>
+          <button class="link-btn danger" id="file-remove" type="button">移除</button>
+        </div>
+      </div>
+
+      <!-- 图片链接 -->
+      <div class="panel" id="panel-url">
+        <div class="row">
+          <input type="url" id="url-input" class="text-input" placeholder="https://example.com/wallpaper.jpg" spellcheck="false" />
+          <button class="btn-primary" id="url-apply" type="button">使用</button>
+        </div>
+        <p class="hint">粘贴任意公开图片地址；部分站点有防盗链，若显示空白请换一张，或改用本地上传。</p>
+      </div>
+
+      <!-- 渐变预设 -->
+      <div class="panel" id="panel-preset">
+        <div class="presets" id="presets"></div>
+      </div>
+
+      <!-- 首页横幅 -->
+      <div class="panel" id="panel-banner">
+        <p class="hint">直接使用 B 站首页头图作为全屏背景：打开 <b>bilibili 首页</b>，再点下方按钮抓取。</p>
+        <div class="row">
+          <button class="btn-secondary" id="banner-grab" type="button">抓取当前首页头图</button>
+          <button class="btn-ghost" id="banner-random" type="button">随机热门封面</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 页面风格 -->
+    <section class="card">
+      <div class="card__head">
+        <h2>页面风格</h2>
+        <span class="muted">覆盖 B 站原本的底色</span>
+      </div>
+      <div class="segmented" id="mode" role="radiogroup" aria-label="页面风格">
+        <button data-mode="plain" role="radio" aria-checked="false">纯背景</button>
+        <button data-mode="glass" role="radio" aria-checked="false">毛玻璃</button>
+        <button data-mode="immersive" role="radio" aria-checked="false">沉浸式</button>
+      </div>
+      <p class="hint" id="mode-hint">毛玻璃：内容区铺一层半透明磨砂玻璃，视频卡片更透气。</p>
+    </section>
+
+    <!-- 外观 -->
+    <section class="card">
+      <div class="card__head">
+        <h2>外观</h2>
+        <button class="link-btn" id="reset-appearance" type="button">重置</button>
+      </div>
+
+      <div class="slider" data-field="blur" data-min="0" data-max="40" data-unit="px">
+        <div class="slider__top"><span>背景模糊</span><output>0 px</output></div>
+        <input type="range" min="0" max="40" step="1" />
+      </div>
+
+      <div class="slider" data-field="dim" data-min="0" data-max="90" data-unit="%">
+        <div class="slider__top"><span>压暗遮罩</span><output>25 %</output></div>
+        <input type="range" min="0" max="90" step="1" />
+      </div>
+
+      <div class="slider" data-field="glass" data-min="0" data-max="100" data-unit="%">
+        <div class="slider__top"><span>卡片透明度</span><output>55 %</output></div>
+        <input type="range" min="0" max="100" step="1" />
+      </div>
+
+      <div class="slider" data-field="backdrop" data-min="0" data-max="40" data-unit="px">
+        <div class="slider__top"><span>毛玻璃强度</span><output>14 px</output></div>
+        <input type="range" min="0" max="40" step="1" />
+      </div>
+
+      <div class="slider" data-field="brightness" data-min="50" data-max="150" data-unit="%">
+        <div class="slider__top"><span>亮度</span><output>100 %</output></div>
+        <input type="range" min="50" max="150" step="1" />
+      </div>
+
+      <div class="inline-row">
+        <label class="pick">
+          <span>填充方式</span>
+          <select id="fit">
+            <option value="cover">铺满裁切</option>
+            <option value="contain">完整显示</option>
+          </select>
+        </label>
+        <label class="pick">
+          <span>对齐</span>
+          <select id="position">
+            <option value="center">居中</option>
+            <option value="top">顶部</option>
+            <option value="bottom">底部</option>
+            <option value="left">左对齐</option>
+            <option value="right">右对齐</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <!-- 高级 -->
+    <details class="card advanced">
+      <summary>
+        <span>高级设置</span>
+        <span class="muted" id="advanced-summary">播放页 · 主题 · 顶栏</span>
+      </summary>
+      <div class="advanced__body">
+        <label class="toggle-row">
+          <span>
+            <b>播放页也应用</b>
+            <small>视频 / 番剧 / 直播 / 课程页</small>
+          </span>
+          <input type="checkbox" id="videoPages" />
+        </label>
+
+        <div class="inline-row">
+          <label class="pick">
+            <span>深浅色</span>
+            <select id="theme">
+              <option value="auto">跟随系统 / B站</option>
+              <option value="light">浅色</option>
+              <option value="dark">深色</option>
+            </select>
+          </label>
+          <label class="pick">
+            <span>顶栏压暗</span>
+            <select id="headerDim">
+              <option value="0">无</option>
+              <option value="15">轻微</option>
+              <option value="30">适中</option>
+              <option value="45">较深</option>
+              <option value="60">很深</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="row">
+          <button class="btn-secondary" id="preview-btn" type="button">在新标签页打开 B 站预览</button>
+        </div>
+
+        <div class="row">
+          <button class="btn-ghost" id="export-btn" type="button">导出配置</button>
+          <button class="btn-ghost" id="import-btn" type="button">导入配置</button>
+          <input type="file" id="import-input" accept="application/json,.json" hidden />
+        </div>
+
+        <p class="version">v1.0.0 · 设置只保存在本机 · 快捷键 Alt+B 开关</p>
+      </div>
+    </details>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <script src="src/shared.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
