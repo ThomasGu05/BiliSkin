@@ -20,7 +20,7 @@
 - 本地保存
 - 导入、导出json
 <p>
-  <img src="docs/preview-popup.jpg" width=200 alt="设置弹窗" />
+  <img src="docs/preview-popup.jpg" width=250 alt="设置弹窗" />
 </p>
 
 ## 安装
