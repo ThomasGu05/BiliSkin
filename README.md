@@ -30,7 +30,7 @@
 1. 打开 `chrome://extensions`（Edge 是 `edge://extensions`）
 2. 右上角打开 **开发者模式**
 3. 将从 **Releases** 下载的.zip压缩文件 拖入 **Extensions** 界面
-4. 打开 [bilibili.com](https://www.bilibili.com/)，点击工具栏里的皮肤图标调整设置
+4. 打开 [bilibili.com](https://www.bilibili.com/)，点击工具栏里的皮肤图标调整设置即可
 
 
 ### 方式二：Tampermonkey 用户脚本
