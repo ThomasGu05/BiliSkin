@@ -28,14 +28,14 @@
 
 1. 打开 `chrome://extensions`（Edge 是 `edge://extensions`）
 2. 右上角打开 **开发者模式**
-3. 点击 **加载已解压的扩展程序**，选择从releases下载的.zip压缩文件
+3. 将从 **Releases** 下载的.zip压缩文件 拖入 **Extensions** 界面
 4. 打开 [bilibili.com](https://www.bilibili.com/)，点击工具栏里的皮肤图标调整设置
 
 
 ### 方式二：Tampermonkey 用户脚本
 
 1. 安装 [Tampermonkey](https://www.tampermonkey.net/) 或 Violentmonkey
-2. 新建脚本，把 [`bili-skin.user.js`](bili-skin.user.js) 粘贴进去（或将文件拖进浏览器）
+2. 新建脚本，把从 **Releases** 下载的.js文件 粘贴进去（或将文件拖进浏览器）
 3. 打开 B 站，右下角会出现 🎨 小圆点，点开即可调设置
 
 > 用户脚本与扩展共用同一套皮肤引擎，设置存在 `localStorage`；不支持本地图片上传，但可以用图片链接和渐变。
