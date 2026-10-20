@@ -1,0 +1,15 @@
+dist/
+*.zip
+.DS_Store
+.AppleDouble
+.LSOverride
+.vscode/
+.idea/
+*.swp
+*.swo
+node_modules/
+__pycache__/
+*.py[cod]
+.pnpm-store/
+*.log
+npm-debug.log*
