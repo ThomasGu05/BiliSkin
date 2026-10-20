@@ -1,6 +1,7 @@
 # B站自定义皮肤 · Bili Skin
 
 给网页版 bilibili 换一张背景：自定义图片 / 渐变、毛玻璃卡片、沉浸式排版。全部本地运行，不需要登录、不上传任何数据。
+部分代码使用AI。
 
 ![沉浸式效果](docs/preview-immersive.jpg)
 
