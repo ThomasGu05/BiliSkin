@@ -70,7 +70,6 @@
 - 修改 `src/*` 后，在 `chrome://extensions` 点扩展卡片上的刷新按钮，再刷新 B 站页面即可看到效果。
 
 ```
-
 ## 许可证
 
 [MIT](LICENSE)。与 bilibili 官方无关，仅供个人学习与自定义使用。
