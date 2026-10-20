@@ -28,7 +28,7 @@
 
 1. 打开 `chrome://extensions`（Edge 是 `edge://extensions`）
 2. 右上角打开 **开发者模式**
-3. 点击 **加载已解压的扩展程序**，选择本目录（包含 `manifest.json` 的那一层）
+3. 点击 **加载已解压的扩展程序**，选择从releases下载的.zip压缩文件
 4. 打开 [bilibili.com](https://www.bilibili.com/)，点击工具栏里的皮肤图标调整设置
 
 
