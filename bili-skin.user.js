@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         B站自定义皮肤 · Bili Skin
 // @namespace    https://github.com/bili-skin
-// @version      1.0.0
+// @version      1.0.1
 // @description  给网页版 bilibili 换背景：自定义图片/渐变、毛玻璃卡片、沉浸式排版。快捷键 Alt+B 开关。
 // @author       bili-skin
 // @match        *://*.bilibili.com/*
@@ -1027,7 +1027,7 @@
     '    <button class="btn" data-act="import">导入</button>',
     '  </div>',
     '</div>'
-  ].join('\n').replace('__VERSION__', "1.0.0");
+  ].join('\n').replace('__VERSION__', "1.0.1");
 
   var q = function (sel) { return root.querySelector(sel); };
   var qa = function (sel) { return Array.prototype.slice.call(root.querySelectorAll(sel)); };

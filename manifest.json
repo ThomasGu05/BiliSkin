@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "B站自定义皮肤 · Bili Skin",
   "short_name": "Bili Skin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "给网页版 bilibili 换一张背景吧：自定义图片/渐变背景、毛玻璃卡片、沉浸式排版，设置本地保存，无需联网。",
   "icons": {
     "16": "icons/icon16.png",
