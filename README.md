@@ -19,6 +19,7 @@
 - 播放页支持
 - 本地保存
 - 导入、导出json
+
 ![设置弹窗](docs/preview-popup.jpg)
 
 ## 安装
